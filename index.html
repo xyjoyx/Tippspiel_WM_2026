@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚽ WM 2026 Tippspiel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div id="loadingOverlay" class="loading-overlay hidden">
+  <div class="spinner"></div>
+  <span>Laden…</span>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-ball">⚽</span>
+      <span class="logo-text">WM 2026 <em>Tippspiel</em></span>
+    </div>
+    <nav class="main-nav" id="mainNav">
+      <a href="#" class="nav-link active" data-page="home">Meine Tipps</a>
+      <a href="#" class="nav-link" data-page="overview">Alle Tipps</a>
+      <a href="#" class="nav-link" data-page="ranking">Rangliste</a>
+      <a href="#" class="nav-link admin-only hidden" data-page="admin">Admin</a>
+    </nav>
+    <button class="admin-btn" id="adminToggleBtn">🔐 Admin</button>
+  </div>
+</header>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="page-login" class="page active">
+  <div class="login-hero">
+    <div class="login-card">
+      <div class="login-trophy">🏆</div>
+      <h1>WM 2026 Tippspiel</h1>
+      <p class="login-sub">Tippe alle 72 Gruppenspiele – wer hat die meisten Treffer?</p>
+      <div class="login-form">
+        <input type="text" id="nameInput" placeholder="Dein Name" maxlength="30" autocomplete="off">
+        <button class="btn-primary" id="loginBtn">Los geht's →</button>
+      </div>
+      <div class="login-names" id="existingNames"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="page-home" class="page hidden">
+  <div class="container">
+    <div class="page-header">
+      <h2>Hallo, <span id="currentUserName"></span>! 👋</h2>
+      <p class="page-sub">Gib deine Tipps ein. Wird automatisch gespeichert (✓ erscheint).</p>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+      <div class="progress-text" id="progressText">0 von 72 Spielen getippt</div>
+    </div>
+    <div id="groupsContainer"></div>
+  </div>
+</div>
+
+<!-- ===== OVERVIEW PAGE ===== -->
+<div id="page-overview" class="page hidden">
+  <div class="container">
+    <div class="page-header">
+      <h2>Alle Tipps im Überblick</h2>
+      <p class="page-sub">Sieh dir an, was alle für ein bestimmtes Spiel getippt haben.</p>
+    </div>
+    <div class="game-filter">
+      <label>Spiel:</label>
+      <select id="gameSelect"></select>
+    </div>
+    <div id="overviewContainer"></div>
+  </div>
+</div>
+
+<!-- ===== RANKING PAGE ===== -->
+<div id="page-ranking" class="page hidden">
+  <div class="container">
+    <div class="page-header">
+      <h2>🏆 Rangliste</h2>
+      <p class="page-sub">Punkte werden vergeben sobald der Admin Ergebnisse einträgt.</p>
+      <div class="points-legend">
+        <span class="badge exact">3 Punkte</span> Exaktes Ergebnis &nbsp;|&nbsp;
+        <span class="badge tendency">1 Punkt</span> Richtige Tendenz
+      </div>
+    </div>
+    <div id="rankingContainer"></div>
+  </div>
+</div>
+
+<!-- ===== ADMIN PAGE ===== -->
+<div id="page-admin" class="page hidden">
+  <div class="container">
+    <div class="page-header">
+      <h2>⚙️ Admin – Ergebnisse eintragen</h2>
+      <p class="page-sub">Trage die echten Ergebnisse ein. Punkte werden sofort berechnet.</p>
+    </div>
+    <div id="adminContainer"></div>
+  </div>
+</div>
+
+<!-- ===== ADMIN LOGIN MODAL ===== -->
+<div id="adminModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>🔐 Admin Login</h3>
+    <input type="password" id="adminPwInput" placeholder="Passwort" autocomplete="off">
+    <div class="modal-btns">
+      <button class="btn-secondary" id="adminCancelBtn">Abbrechen</button>
+      <button class="btn-primary" id="adminLoginBtn">Einloggen</button>
+    </div>
+    <p class="admin-hint">Standard-Passwort: <code>wm2026admin</code></p>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

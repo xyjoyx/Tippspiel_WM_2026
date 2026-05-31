@@ -1,0 +1,156 @@
+// =============================================
+// WM 2026 – ALLE 72 GRUPPENSPIELE
+// Zeiten in MESZ (Mitteleuropäische Sommerzeit)
+// =============================================
+
+const WM_GROUPS = [
+  {
+    name: "Gruppe A",
+    teams: ["Mexiko", "Südafrika", "Südkorea", "Tschechien"],
+    games: [
+      { id: "A1", date: "2026-06-11", time: "21:00", home: "Mexiko", away: "Südafrika", venue: "Mexiko City" },
+      { id: "A2", date: "2026-06-12", time: "04:00", home: "Südkorea", away: "Tschechien", venue: "Guadalajara" },
+      { id: "A3", date: "2026-06-18", time: "18:00", home: "Tschechien", away: "Südafrika", venue: "Atlanta" },
+      { id: "A4", date: "2026-06-19", time: "03:00", home: "Mexiko", away: "Südkorea", venue: "Guadalajara" },
+      { id: "A5", date: "2026-06-25", time: "03:00", home: "Tschechien", away: "Mexiko", venue: "Mexiko City" },
+      { id: "A6", date: "2026-06-25", time: "03:00", home: "Südafrika", away: "Südkorea", venue: "Monterrey" },
+    ]
+  },
+  {
+    name: "Gruppe B",
+    teams: ["Kanada", "Bosnien-Herzegowina", "Katar", "Schweiz"],
+    games: [
+      { id: "B1", date: "2026-06-12", time: "21:00", home: "Kanada", away: "Bosnien-Herzegowina", venue: "Toronto" },
+      { id: "B2", date: "2026-06-13", time: "21:00", home: "Katar", away: "Schweiz", venue: "San Francisco" },
+      { id: "B3", date: "2026-06-18", time: "21:00", home: "Schweiz", away: "Bosnien-Herzegowina", venue: "Los Angeles" },
+      { id: "B4", date: "2026-06-19", time: "00:00", home: "Kanada", away: "Katar", venue: "Vancouver" },
+      { id: "B5", date: "2026-06-25", time: "00:00", home: "Bosnien-Herzegowina", away: "Katar", venue: "Seattle" },
+      { id: "B6", date: "2026-06-25", time: "00:00", home: "Schweiz", away: "Kanada", venue: "Vancouver" },
+    ]
+  },
+  {
+    name: "Gruppe C",
+    teams: ["Brasilien", "Marokko", "Haiti", "Schottland"],
+    games: [
+      { id: "C1", date: "2026-06-14", time: "00:00", home: "Brasilien", away: "Marokko", venue: "New York/NJ" },
+      { id: "C2", date: "2026-06-14", time: "03:00", home: "Haiti", away: "Schottland", venue: "Boston" },
+      { id: "C3", date: "2026-06-20", time: "00:00", home: "Schottland", away: "Marokko", venue: "Boston" },
+      { id: "C4", date: "2026-06-20", time: "03:00", home: "Brasilien", away: "Haiti", venue: "Philadelphia" },
+      { id: "C5", date: "2026-06-25", time: "00:00", home: "Schottland", away: "Brasilien", venue: "Miami" },
+      { id: "C6", date: "2026-06-25", time: "00:00", home: "Marokko", away: "Haiti", venue: "Atlanta" },
+    ]
+  },
+  {
+    name: "Gruppe D",
+    teams: ["USA", "Paraguay", "Australien", "Türkei"],
+    games: [
+      { id: "D1", date: "2026-06-13", time: "03:00", home: "USA", away: "Paraguay", venue: "Los Angeles" },
+      { id: "D2", date: "2026-06-14", time: "06:00", home: "Australien", away: "Türkei", venue: "Vancouver" },
+      { id: "D3", date: "2026-06-19", time: "21:00", home: "USA", away: "Australien", venue: "Seattle" },
+      { id: "D4", date: "2026-06-20", time: "06:00", home: "Türkei", away: "Paraguay", venue: "San Francisco" },
+      { id: "D5", date: "2026-06-26", time: "04:00", home: "Türkei", away: "USA", venue: "Los Angeles" },
+      { id: "D6", date: "2026-06-26", time: "04:00", home: "Paraguay", away: "Australien", venue: "San Francisco" },
+    ]
+  },
+  {
+    name: "Gruppe E",
+    teams: ["Deutschland", "Curaçao", "Elfenbeinküste", "Ecuador"],
+    games: [
+      { id: "E1", date: "2026-06-14", time: "19:00", home: "Deutschland", away: "Curaçao", venue: "Houston" },
+      { id: "E2", date: "2026-06-15", time: "01:00", home: "Elfenbeinküste", away: "Ecuador", venue: "Philadelphia" },
+      { id: "E3", date: "2026-06-20", time: "22:00", home: "Deutschland", away: "Elfenbeinküste", venue: "Toronto" },
+      { id: "E4", date: "2026-06-21", time: "02:00", home: "Ecuador", away: "Curaçao", venue: "Kansas City" },
+      { id: "E5", date: "2026-06-25", time: "22:00", home: "Curaçao", away: "Elfenbeinküste", venue: "Philadelphia" },
+      { id: "E6", date: "2026-06-25", time: "22:00", home: "Ecuador", away: "Deutschland", venue: "New York/NJ" },
+    ]
+  },
+  {
+    name: "Gruppe F",
+    teams: ["Niederlande", "Japan", "Schweden", "Tunesien"],
+    games: [
+      { id: "F1", date: "2026-06-14", time: "22:00", home: "Niederlande", away: "Japan", venue: "Dallas" },
+      { id: "F2", date: "2026-06-15", time: "04:00", home: "Schweden", away: "Tunesien", venue: "Monterrey" },
+      { id: "F3", date: "2026-06-20", time: "19:00", home: "Japan", away: "Tunesien", venue: "Dallas" },
+      { id: "F4", date: "2026-06-20", time: "22:00", home: "Niederlande", away: "Schweden", venue: "Seattle" },
+      { id: "F5", date: "2026-06-26", time: "00:00", home: "Japan", away: "Schweden", venue: "Los Angeles" },
+      { id: "F6", date: "2026-06-26", time: "00:00", home: "Tunesien", away: "Niederlande", venue: "Kansas City" },
+    ]
+  },
+  {
+    name: "Gruppe G",
+    teams: ["Belgien", "Ägypten", "IR Iran", "Neuseeland"],
+    games: [
+      { id: "G1", date: "2026-06-15", time: "21:00", home: "Belgien", away: "Ägypten", venue: "Seattle" },
+      { id: "G2", date: "2026-06-16", time: "03:00", home: "IR Iran", away: "Neuseeland", venue: "Los Angeles" },
+      { id: "G3", date: "2026-06-21", time: "19:00", home: "Ägypten", away: "Neuseeland", venue: "Atlanta" },
+      { id: "G4", date: "2026-06-21", time: "22:00", home: "Belgien", away: "IR Iran", venue: "Miami" },
+      { id: "G5", date: "2026-06-26", time: "02:00", home: "Ägypten", away: "Belgien", venue: "Boston" },
+      { id: "G6", date: "2026-06-26", time: "02:00", home: "Neuseeland", away: "IR Iran", venue: "Houston" },
+    ]
+  },
+  {
+    name: "Gruppe H",
+    teams: ["Spanien", "Kap Verde", "Saudi-Arabien", "Uruguay"],
+    games: [
+      { id: "H1", date: "2026-06-15", time: "18:00", home: "Spanien", away: "Kap Verde", venue: "Atlanta" },
+      { id: "H2", date: "2026-06-16", time: "00:00", home: "Saudi-Arabien", away: "Uruguay", venue: "Miami" },
+      { id: "H3", date: "2026-06-21", time: "18:00", home: "Spanien", away: "Saudi-Arabien", venue: "Dallas" },
+      { id: "H4", date: "2026-06-21", time: "21:00", home: "Kap Verde", away: "Uruguay", venue: "Boston" },
+      { id: "H5", date: "2026-06-26", time: "21:00", home: "Spanien", away: "Uruguay", venue: "New York/NJ" },
+      { id: "H6", date: "2026-06-26", time: "21:00", home: "Kap Verde", away: "Saudi-Arabien", venue: "Philadelphia" },
+    ]
+  },
+  {
+    name: "Gruppe I",
+    teams: ["Frankreich", "Senegal", "Irak", "Norwegen"],
+    games: [
+      { id: "I1", date: "2026-06-16", time: "21:00", home: "Frankreich", away: "Senegal", venue: "New York/NJ" },
+      { id: "I2", date: "2026-06-17", time: "00:00", home: "Irak", away: "Norwegen", venue: "Boston" },
+      { id: "I3", date: "2026-06-22", time: "00:00", home: "Frankreich", away: "Irak", venue: "Seattle" },
+      { id: "I4", date: "2026-06-22", time: "03:00", home: "Norwegen", away: "Senegal", venue: "Toronto" },
+      { id: "I5", date: "2026-06-26", time: "22:00", home: "Norwegen", away: "Frankreich", venue: "Kansas City" },
+      { id: "I6", date: "2026-06-26", time: "22:00", home: "Senegal", away: "Irak", venue: "Houston" },
+    ]
+  },
+  {
+    name: "Gruppe J",
+    teams: ["Argentinien", "Algerien", "Österreich", "Jordanien"],
+    games: [
+      { id: "J1", date: "2026-06-17", time: "03:00", home: "Argentinien", away: "Algerien", venue: "Kansas City" },
+      { id: "J2", date: "2026-06-17", time: "06:00", home: "Österreich", away: "Jordanien", venue: "San Francisco" },
+      { id: "J3", date: "2026-06-22", time: "19:00", home: "Argentinien", away: "Österreich", venue: "Los Angeles" },
+      { id: "J4", date: "2026-06-22", time: "22:00", home: "Jordanien", away: "Algerien", venue: "Miami" },
+      { id: "J5", date: "2026-06-27", time: "02:00", home: "Argentinien", away: "Jordanien", venue: "Seattle" },
+      { id: "J6", date: "2026-06-27", time: "02:00", home: "Algerien", away: "Österreich", venue: "Dallas" },
+    ]
+  },
+  {
+    name: "Gruppe K",
+    teams: ["Portugal", "DR Kongo", "Usbekistan", "Kolumbien"],
+    games: [
+      { id: "K1", date: "2026-06-17", time: "19:00", home: "Portugal", away: "DR Kongo", venue: "Houston" },
+      { id: "K2", date: "2026-06-18", time: "04:00", home: "Usbekistan", away: "Kolumbien", venue: "Mexiko City" },
+      { id: "K3", date: "2026-06-23", time: "00:00", home: "Portugal", away: "Usbekistan", venue: "San Francisco" },
+      { id: "K4", date: "2026-06-23", time: "03:00", home: "Kolumbien", away: "DR Kongo", venue: "Miami" },
+      { id: "K5", date: "2026-06-27", time: "22:00", home: "Kolumbien", away: "Portugal", venue: "Atlanta" },
+      { id: "K6", date: "2026-06-27", time: "22:00", home: "DR Kongo", away: "Usbekistan", venue: "Toronto" },
+    ]
+  },
+  {
+    name: "Gruppe L",
+    teams: ["England", "Kroatien", "Ghana", "Panama"],
+    games: [
+      { id: "L1", date: "2026-06-17", time: "22:00", home: "England", away: "Kroatien", venue: "Dallas" },
+      { id: "L2", date: "2026-06-18", time: "01:00", home: "Ghana", away: "Panama", venue: "Toronto" },
+      { id: "L3", date: "2026-06-23", time: "19:00", home: "England", away: "Ghana", venue: "Seattle" },
+      { id: "L4", date: "2026-06-23", time: "22:00", home: "Panama", away: "Kroatien", venue: "Houston" },
+      { id: "L5", date: "2026-06-27", time: "19:00", home: "England", away: "Panama", venue: "Los Angeles" },
+      { id: "L6", date: "2026-06-27", time: "19:00", home: "Kroatien", away: "Ghana", venue: "Atlanta" },
+    ]
+  }
+];
+
+// Alle Spiele als flache Liste
+const ALL_GAMES = WM_GROUPS.flatMap(g => g.games.map(game => ({ ...game, group: g.name })));
+
+const ADMIN_PASSWORD = "wm2026admin";
