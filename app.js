@@ -395,5 +395,4 @@ function showToast(msg) {
 
 // ---- INIT ----
 renderLoginNames();
-APPJS
-echo "done"
+
