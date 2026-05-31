@@ -436,21 +436,5 @@ function showToast(msg) {
 // ---- INIT ----
 renderLoginNames();
 
-// Überprüfe ob Script-URL gesetzt ist
-if (SCRIPT_URL === "DEINE_SCRIPT_URL_HIER_EINTRAGEN") {
-  setTimeout(() => {
-    document.getElementById('page-login').innerHTML = `
-      <div class="login-hero">
-        <div class="login-card">
-          <div style="font-size:48px;margin-bottom:16px">⚠️</div>
-          <h1 style="font-size:24px;margin-bottom:12px">Setup erforderlich</h1>
-          <p style="color:#8b949e;line-height:1.7">
-            Bitte lies die <strong>Anleitung</strong> weiter unten und trage deine<br>
-            Google Apps Script URL in der Datei <code>app.js</code> ein.<br><br>
-            <strong>SCRIPT_URL = "DEINE_URL_HIER"</strong>
-          </p>
-        </div>
-      </div>
-    `;
-  }, 100);
+
 }
