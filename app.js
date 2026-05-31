@@ -4,7 +4,7 @@
 // =============================================
 
 // ⚠️ HIER DEINE GOOGLE APPS SCRIPT URL EINTRAGEN:
-const SCRIPT_URL = "DEINE_SCRIPT_URL_HIER_EINTRAGEN";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhZCHUYcrTuRA_xtPUX_nrEtaTD8uyo8Kfdl-iz21BzvSU31uIihAPcMt7Ryvsd1nc/exec";
 
 // ---- STATE ----
 let currentUser = null;
