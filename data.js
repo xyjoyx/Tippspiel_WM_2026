@@ -153,4 +153,4 @@ const WM_GROUPS = [
 // Alle Spiele als flache Liste
 const ALL_GAMES = WM_GROUPS.flatMap(g => g.games.map(game => ({ ...game, group: g.name })));
 
-const ADMIN_PASSWORD = "wm2026admin";
+const ADMIN_PASSWORD = "Jonas1002";
