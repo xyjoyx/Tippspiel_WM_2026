@@ -9,7 +9,7 @@ let currentUser = null;
 let isAdmin = false;
 let allTips = {};
 let results = {};
-let koGameData = {}; // gespeicherte KO-Spieldaten (Mannschaften, Venue, Zeit)
+let koGameData = {};
 let savingQueue = {};
 
 // ---- NAMEN NORMALISIEREN ----
@@ -45,7 +45,6 @@ async function loadAllData() {
 }
 
 function applyKoGameData() {
-  // KO-Spieldaten (Mannschaften, Venue) aus dem Sheet in KO_ROUNDS einpflegen
   KO_ROUNDS.forEach(round => {
     round.games.forEach(game => {
       if (koGameData[game.id]) {
@@ -65,16 +64,15 @@ function showLoading(show) {
   document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
 }
 
-// ---- NUTZER-VERWALTUNG (lokal) ----
+// ---- NUTZER-VERWALTUNG ----
 function getKnownUsers() {
   try { return JSON.parse(localStorage.getItem('wm2026_users') || '[]'); } catch { return []; }
 }
 function addKnownUser(name) {
   const users = getKnownUsers();
   const norm = normalizeName(name);
-  // Entferne alte Varianten desselben Namens, füge normalisierten hinzu
   const filtered = users.filter(u => normalizeName(u) !== norm);
-  filtered.unshift(norm); // neueste zuerst
+  filtered.unshift(norm);
   localStorage.setItem('wm2026_users', JSON.stringify(filtered.slice(0, 10)));
 }
 function getLastUser() {
@@ -89,8 +87,10 @@ function showPage(pageId) {
   if (page) { page.classList.remove('hidden'); page.classList.add('active'); }
   document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.page === pageId));
   if (pageId === 'home') renderHome();
+  if (pageId === 'today') renderToday();
   if (pageId === 'overview') renderOverview();
   if (pageId === 'ranking') renderRanking();
+  if (pageId === 'verlauf') renderVerlauf();
   if (pageId === 'admin') renderAdmin();
 }
 
@@ -98,7 +98,6 @@ function showPage(pageId) {
 function renderLoginPage() {
   const lastUser = getLastUser();
   const knownUsers = getKnownUsers();
-
   const returningEl = document.getElementById('returningUser');
   const newLoginEl = document.getElementById('newLogin');
 
@@ -113,7 +112,6 @@ function renderLoginPage() {
     document.getElementById('switchToNewLogin').classList.add('hidden');
   }
 
-  // Andere bekannte User anzeigen (nicht der letzte)
   const othersEl = document.getElementById('otherUsers');
   const others = knownUsers.slice(1, 6);
   if (others.length) {
@@ -122,8 +120,6 @@ function renderLoginPage() {
   } else {
     othersEl.innerHTML = '';
   }
-
-  // Alle bekannten Teilnehmer auf Startseite (aus allTips)
   renderParticipants();
 }
 
@@ -146,13 +142,10 @@ async function quickLogin(name) {
   showPage('home');
 }
 
-// Wiederkehrender Nutzer
 document.getElementById('continueBtn').addEventListener('click', () => {
   const lastUser = getLastUser();
   if (lastUser) quickLogin(lastUser);
 });
-
-// Neuer Name
 document.getElementById('loginBtn').addEventListener('click', () => {
   const name = document.getElementById('nameInput').value.trim();
   if (!name) { showToast('Bitte gib deinen Namen ein!'); return; }
@@ -161,8 +154,6 @@ document.getElementById('loginBtn').addEventListener('click', () => {
 document.getElementById('nameInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('loginBtn').click();
 });
-
-// Umschalten zu neuem Login
 document.getElementById('switchToNewLogin').addEventListener('click', () => {
   document.getElementById('returningUser').classList.add('hidden');
   document.getElementById('newLogin').classList.remove('hidden');
@@ -209,14 +200,13 @@ document.getElementById('adminPwInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('adminLoginBtn').click();
 });
 
-// ---- HOME – Gruppenphase + freigeschaltete KO-Spiele ----
+// ---- HOME ----
 function renderHome() {
   if (!currentUser) return;
   const myTips = allTips[currentUser] || {};
   const container = document.getElementById('groupsContainer');
   container.innerHTML = '';
 
-  // Gruppenspiele
   WM_GROUPS.forEach(group => {
     const section = createGameSection(group.name,
       `<span class="group-teams">${group.teams.join(' · ')}</span>`,
@@ -224,7 +214,6 @@ function renderHome() {
     container.appendChild(section);
   });
 
-  // KO-Runden – nur freigeschaltete Spiele anzeigen
   KO_ROUNDS.forEach(round => {
     const unlockedGames = round.games.filter(g => g.unlocked && g.home !== 'TBD' && g.away !== 'TBD');
     if (!unlockedGames.length) return;
@@ -238,7 +227,268 @@ function renderHome() {
   updateProgress();
 }
 
-// Gibt true zurück wenn Anpfiff bereits vorbei ist
+// ---- HEUTE TAB ----
+function renderToday() {
+  if (!currentUser) return;
+  const container = document.getElementById('todayContainer');
+  container.innerHTML = '';
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const allGames = [...ALL_GROUP_GAMES, ...ALL_KO_GAMES.filter(g => g.unlocked && g.home !== 'TBD')];
+  const todayGames = allGames
+    .filter(g => g.date === todayStr)
+    .sort((a, b) => a.time.localeCompare(b.time));
+
+  if (!todayGames.length) {
+    container.innerHTML = `
+      <div class="today-empty">
+        <div class="today-empty-icon">😴</div>
+        <p>Heute sind keine Spiele!</p>
+        <p class="today-empty-sub">Genieß den freien Tag ⚽</p>
+      </div>`;
+    return;
+  }
+
+  // Datum-Header
+  const dateHeader = document.createElement('div');
+  dateHeader.className = 'today-date-header';
+  dateHeader.textContent = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' });
+  container.appendChild(dateHeader);
+
+  // Eigener Tipp + Alle anderen Tipps pro Spiel
+  todayGames.forEach(game => {
+    const myTips = allTips[currentUser] || {};
+    const myTip = myTips[game.id] || null;
+    const result = results[game.id];
+    const locked = isGameLocked(game);
+
+    // Alle Tipps für dieses Spiel sammeln
+    const allGameTips = Object.entries(allTips)
+      .filter(([name]) => name !== '_admin_')
+      .map(([name, tips]) => ({
+        name,
+        tip: (tips[game.id] && tips[game.id].home !== '') ? tips[game.id] : null
+      }));
+
+    const card = document.createElement('div');
+    card.className = 'today-card';
+
+    let resultBadge = '';
+    if (result) {
+      resultBadge = `<div class="today-result">Ergebnis: <strong>${result.home} : ${result.away}</strong></div>`;
+    }
+
+    let myTipSection = '';
+    if (myTip) {
+      const pts = result ? calcPoints(myTip, result) : null;
+      const ptsHtml = pts !== null
+        ? `<span class="pts-badge ${pts===3?'exact':pts===1?'tendency':'none'}">${pts===3?'+3':pts===1?'+1':'+0'}</span>`
+        : '';
+      myTipSection = `
+        <div class="today-mytip">
+          <span class="today-mytip-label">Dein Tipp:</span>
+          <strong>${myTip.home} : ${myTip.away}</strong>
+          ${ptsHtml}
+        </div>`;
+    } else if (!locked) {
+      myTipSection = `<div class="today-mytip no-tip">⚠️ Noch kein Tipp abgegeben!</div>`;
+    } else {
+      myTipSection = `<div class="today-mytip no-tip">🔒 Kein Tipp – Spiel bereits gesperrt</div>`;
+    }
+
+    // Alle anderen Tipps
+    const othersHtml = allGameTips.map(({ name, tip }) => {
+      const isMe = name === currentUser;
+      if (isMe) return '';
+      const pts = (tip && result) ? calcPoints(tip, result) : null;
+      const ptsHtml = pts !== null
+        ? `<span class="pts-badge ${pts===3?'exact':pts===1?'tendency':'none'}">${pts===3?'+3':pts===1?'+1':'+0'}</span>`
+        : '';
+      return `
+        <div class="today-other-tip">
+          <span class="today-other-name">${escapeHtml(name)}</span>
+          <span class="today-other-score">${tip ? `${tip.home} : ${tip.away}` : '<em>–</em>'}</span>
+          ${ptsHtml}
+        </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="today-card-header">
+        <div class="today-teams">
+          <span class="today-team">${game.home}</span>
+          <span class="today-vs">vs</span>
+          <span class="today-team">${game.away}</span>
+        </div>
+        <div class="today-meta">${game.time} Uhr · ${game.venue}${locked ? ' 🔒' : ''}</div>
+      </div>
+      ${resultBadge}
+      ${myTipSection}
+      ${othersHtml ? `<div class="today-others-label">Alle Tipps:</div><div class="today-others">${othersHtml}</div>` : ''}
+    `;
+    container.appendChild(card);
+  });
+}
+
+// ---- PUNKTE-VERLAUF ----
+function renderVerlauf() {
+  const container = document.getElementById('verlaufContainer');
+  container.innerHTML = '';
+
+  // Alle Spieltage (Daten mit Ergebnissen) ermitteln
+  const allGames = [...ALL_GROUP_GAMES, ...ALL_KO_GAMES];
+  const gamesWithResults = allGames.filter(g => results[g.id]);
+
+  if (!gamesWithResults.length) {
+    container.innerHTML = '<p class="empty">Noch keine Ergebnisse eingetragen.</p>';
+    return;
+  }
+
+  // Spieler (ohne admin)
+  const players = Object.keys(allTips).filter(n => n !== '_admin_');
+  if (!players.length) { container.innerHTML = '<p class="empty">Noch keine Teilnehmer.</p>'; return; }
+
+  // Einzigartige Daten sortiert
+  const dates = [...new Set(gamesWithResults.map(g => g.date))].sort();
+
+  // Kumulative Punkte pro Spieler pro Tag berechnen
+  const playerPoints = {};
+  players.forEach(p => { playerPoints[p] = {}; });
+
+  dates.forEach(date => {
+    players.forEach(player => {
+      const tips = allTips[player] || {};
+      const prevDate = dates[dates.indexOf(date) - 1];
+      const prevTotal = prevDate ? (playerPoints[player][prevDate] || 0) : 0;
+
+      const dayGames = gamesWithResults.filter(g => g.date === date);
+      const dayPts = dayGames.reduce((sum, game) => {
+        const tip = tips[game.id];
+        const result = results[game.id];
+        if (!tip || tip.home === '') return sum;
+        return sum + calcPoints(tip, result);
+      }, 0);
+
+      playerPoints[player][date] = prevTotal + dayPts;
+    });
+  });
+
+  // Top 5 Spieler nach aktuellem Gesamtpunktestand
+  const lastDate = dates[dates.length - 1];
+  const ranked = players
+    .map(p => ({ name: p, total: playerPoints[p][lastDate] || 0 }))
+    .sort((a, b) => b.total - a.total);
+  const top5 = new Set(ranked.slice(0, 5).map(r => r.name));
+
+  // Farben für Top 5
+  const colors = ['#f59e0b', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6'];
+  const colorMap = {};
+  let colorIdx = 0;
+  ranked.forEach(r => {
+    if (top5.has(r.name)) {
+      colorMap[r.name] = colors[colorIdx++];
+    } else {
+      colorMap[r.name] = '#94a3b8';
+    }
+  });
+
+  // SVG-Diagramm zeichnen
+  const W = 700, H = 380;
+  const padL = 45, padR = 120, padT = 20, padB = 50;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+
+  const allValues = players.flatMap(p => dates.map(d => playerPoints[p][d] || 0));
+  const maxVal = Math.max(...allValues, 1);
+
+  const xStep = chartW / Math.max(dates.length - 1, 1);
+
+  function xPos(i) { return padL + i * xStep; }
+  function yPos(v) { return padT + chartH - (v / maxVal) * chartH; }
+
+  // Datum-Labels kürzen
+  function shortDate(d) {
+    const parts = d.split('-');
+    return parts[2] + '.' + parts[1] + '.';
+  }
+
+  // Gitternetz-Linien
+  const gridLines = [];
+  const gridCount = 5;
+  for (let i = 0; i <= gridCount; i++) {
+    const v = Math.round((maxVal / gridCount) * i);
+    const y = yPos(v);
+    gridLines.push(`
+      <line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>
+      <text x="${padL - 6}" y="${y + 4}" text-anchor="end" font-size="11" fill="#94a3b8">${v}</text>
+    `);
+  }
+
+  // Linien + Punkte pro Spieler
+  const lines = players.map(player => {
+    const color = colorMap[player];
+    const isTop = top5.has(player);
+    const strokeW = isTop ? 2.5 : 1.2;
+    const opacity = isTop ? 1 : 0.35;
+
+    const points = dates.map((d, i) => {
+      const v = playerPoints[player][d] || 0;
+      return `${xPos(i)},${yPos(v)}`;
+    }).join(' ');
+
+    const dots = dates.map((d, i) => {
+      const v = playerPoints[player][d] || 0;
+      return isTop
+        ? `<circle cx="${xPos(i)}" cy="${yPos(v)}" r="4" fill="${color}" stroke="white" stroke-width="1.5"/>`
+        : '';
+    }).join('');
+
+    return `
+      <polyline points="${points}" fill="none" stroke="${color}" stroke-width="${strokeW}" opacity="${opacity}" stroke-linejoin="round" stroke-linecap="round"/>
+      ${dots}
+    `;
+  });
+
+  // Legende rechts (nur Top 5 + Rest zusammen)
+  const legendItems = ranked.map((r, i) => {
+    const color = colorMap[r.name];
+    const isTop = top5.has(r.name);
+    const y = padT + i * 22;
+    if (y > H - padB - 10) return '';
+    return `
+      <rect x="${W - padR + 10}" y="${y}" width="12" height="12" rx="3" fill="${color}" opacity="${isTop ? 1 : 0.4}"/>
+      <text x="${W - padR + 28}" y="${y + 10}" font-size="11" fill="${isTop ? '#1e293b' : '#94a3b8'}" font-weight="${isTop ? '600' : '400'}">
+        ${escapeHtml(r.name.length > 10 ? r.name.slice(0, 9) + '…' : r.name)} (${r.total})
+      </text>
+    `;
+  }).join('');
+
+  // X-Achse Labels (max 8 anzeigen um Überlappung zu vermeiden)
+  const step = Math.ceil(dates.length / 8);
+  const xLabels = dates.map((d, i) => {
+    if (i % step !== 0 && i !== dates.length - 1) return '';
+    return `<text x="${xPos(i)}" y="${H - padB + 18}" text-anchor="middle" font-size="10" fill="#94a3b8">${shortDate(d)}</text>`;
+  }).join('');
+
+  const svg = `
+    <div class="verlauf-wrap">
+      <h3 class="verlauf-title">📈 Punkte-Verlauf</h3>
+      <p class="verlauf-sub">Top 5 farbig hervorgehoben · aktualisiert sich automatisch</p>
+      <div class="verlauf-svg-wrap">
+        <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px">
+          ${gridLines.join('')}
+          <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + chartH}" stroke="#cbd5e1" stroke-width="1"/>
+          <line x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}" stroke="#cbd5e1" stroke-width="1"/>
+          ${lines.join('')}
+          ${xLabels}
+          <g>${legendItems}</g>
+        </svg>
+      </div>
+    </div>
+  `;
+  container.innerHTML = svg;
+}
+
+// ---- GAME HELPERS ----
 function isGameLocked(game) {
   try {
     const [h, m] = game.time.split(':').map(Number);
@@ -294,7 +544,7 @@ function handleTipInput(input) {
   const id = input.dataset.id;
   const allGames = [...ALL_GROUP_GAMES, ...ALL_KO_GAMES];
   const game = allGames.find(g => g.id === id);
-  if (game && isGameLocked(game)) return; // Sicherheitsnetz serverseitig
+  if (game && isGameLocked(game)) return;
   const row = document.querySelector(`.game-row[data-id="${id}"]`);
   const homeVal = row.querySelector('[data-side="home"]').value;
   const awayVal = row.querySelector('[data-side="away"]').value;
@@ -324,7 +574,6 @@ function handleTipInput(input) {
 
 function updateProgress() {
   const myTips = allTips[currentUser] || {};
-  // Zähle nur tippbare Spiele (Gruppenspiele + freigeschaltete KO-Spiele)
   const tippableGames = [
     ...ALL_GROUP_GAMES,
     ...ALL_KO_GAMES.filter(g => g.unlocked && g.home !== 'TBD')
@@ -335,15 +584,20 @@ function updateProgress() {
   document.getElementById('progressText').textContent = `${done} von ${total} Spielen getippt`;
 }
 
-// ---- OVERVIEW ----
+// ---- OVERVIEW – nach Datum sortiert ----
 function renderOverview() {
   const gameSelect = document.getElementById('gameSelect');
   const tippableGames = [
     ...ALL_GROUP_GAMES,
     ...ALL_KO_GAMES.filter(g => g.unlocked && g.home !== 'TBD')
-  ];
+  ].sort((a, b) => {
+    const dateA = new Date(a.date + 'T' + (a.time || '00:00') + ':00');
+    const dateB = new Date(b.date + 'T' + (b.time || '00:00') + ':00');
+    return dateA - dateB;
+  });
+
   gameSelect.innerHTML = tippableGames.map(g =>
-    `<option value="${g.id}">${g.round || g.group}: ${g.home} vs ${g.away} (${formatDateShort(g.date)})</option>`
+    `<option value="${g.id}">${formatDateShort(g.date)} · ${g.home} vs ${g.away}</option>`
   ).join('');
   gameSelect.onchange = renderOverviewTable;
   renderOverviewTable();
@@ -387,7 +641,7 @@ function renderOverviewTable() {
     </table>`;
 }
 
-// ---- RANKING ----
+// ---- RANKING – gleicher Platz bei Gleichstand ----
 function renderRanking() {
   const container = document.getElementById('rankingContainer');
   const ranked = Object.entries(allTips)
@@ -411,13 +665,29 @@ function renderRanking() {
 
   if (!ranked.length) { container.innerHTML = '<p class="empty">Noch keine Teilnehmer.</p>'; return; }
 
+  let currentRank = 1;
+  ranked.forEach((r, i) => {
+    if (i === 0) {
+      r.rank = 1;
+    } else {
+      const prev = ranked[i - 1];
+      if (r.total === prev.total && r.exact === prev.exact) {
+        r.rank = prev.rank;
+      } else {
+        r.rank = i + 1;
+      }
+    }
+  });
+
+  const medals = ['🥇','🥈','🥉'];
+
   container.innerHTML = `
     <table class="ranking-table">
       <thead><tr><th>#</th><th>Name</th><th>Punkte</th><th>Exakt</th><th>Tendenz</th><th>Getippt</th></tr></thead>
       <tbody>
-        ${ranked.map((r,i) => `
-          <tr class="${['rank-1','rank-2','rank-3'][i]||''}${r.name===currentUser?' current-user':''}">
-            <td class="rank-pos">${['🥇','🥈','🥉'][i]||i+1}</td>
+        ${ranked.map(r => `
+          <tr class="${r.rank<=3?'rank-'+r.rank:''}${r.name===currentUser?' current-user':''}">
+            <td class="rank-pos">${medals[r.rank-1] || r.rank}</td>
             <td>${escapeHtml(r.name)}${r.name===currentUser?' <span class="you-badge">Du</span>':''}</td>
             <td class="pts-col"><strong>${r.total}</strong></td>
             <td>${r.exact}</td><td>${r.tendency}</td><td>${r.tipped}</td>
@@ -431,7 +701,6 @@ function renderAdmin() {
   const container = document.getElementById('adminContainer');
   container.innerHTML = '';
 
-  // Tab-Navigation
   const tabs = document.createElement('div');
   tabs.className = 'admin-tabs';
   tabs.innerHTML = `
@@ -462,12 +731,9 @@ function renderAdmin() {
 }
 
 function renderAdminResults(container) {
-  // Gruppenspiele
   WM_GROUPS.forEach(group => {
     container.appendChild(createAdminResultSection(group.name, group.games));
   });
-
-  // KO-Runden Ergebnisse (nur freigeschaltete)
   KO_ROUNDS.forEach(round => {
     const unlockedGames = round.games.filter(g => g.unlocked && g.home !== 'TBD');
     if (!unlockedGames.length) return;
@@ -534,7 +800,7 @@ function renderAdminKo(container) {
         <div class="ko-edit-inner">
           <input type="text" class="ko-team-input" data-id="${game.id}" data-field="home" value="${escapeHtml(homeVal)}" placeholder="Heim-Team">
           <span class="score-colon">vs</span>
-          <input type="text" class="ko-team-input" data-id="${game.id}" data-field="away" value="${escapeHtml(awayVal)}" placeholder: "Auswärts-Team">
+          <input type="text" class="ko-team-input" data-id="${game.id}" data-field="away" value="${escapeHtml(awayVal)}" placeholder="Auswärts-Team">
           <input type="text" class="ko-venue-input" data-id="${game.id}" data-field="venue" value="${escapeHtml(venueVal)}" placeholder="Stadion">
           <input type="text" class="ko-time-input" data-id="${game.id}" data-field="time" value="${escapeHtml(timeVal)}" placeholder="HH:MM">
         </div>
@@ -553,7 +819,6 @@ function renderAdminKo(container) {
     container.appendChild(section);
   });
 
-  // Event-Listener für KO-Speichern
   container.querySelectorAll('.btn-ko-save').forEach(btn => {
     btn.addEventListener('click', () => saveKoGame(btn.dataset.id, container));
   });
@@ -563,20 +828,17 @@ function renderAdminKo(container) {
 }
 
 async function saveKoGame(gameId, container) {
-  const row = container.querySelector(`.ko-edit-row [data-id="${gameId}"][data-field="home"]`)?.closest('.game-row') ||
-              container.querySelector(`[data-id="${gameId}"].btn-ko-save`)?.closest('.game-row');
-
-  const homeInput = container.querySelector(`[data-id="${gameId}"][data-field="home"]`);
-  const awayInput = container.querySelector(`[data-id="${gameId}"][data-field="away"]`);
+  const homeInput  = container.querySelector(`[data-id="${gameId}"][data-field="home"]`);
+  const awayInput  = container.querySelector(`[data-id="${gameId}"][data-field="away"]`);
   const venueInput = container.querySelector(`[data-id="${gameId}"][data-field="venue"]`);
-  const timeInput = container.querySelector(`[data-id="${gameId}"][data-field="time"]`);
+  const timeInput  = container.querySelector(`[data-id="${gameId}"][data-field="time"]`);
   const unlockCheck = container.querySelector(`.ko-unlock-check[data-id="${gameId}"]`);
   const mark = document.getElementById('ko-mark-' + gameId);
 
-  const home = homeInput?.value.trim() || '';
-  const away = awayInput?.value.trim() || '';
-  const venue = venueInput?.value.trim() || '';
-  const time = timeInput?.value.trim() || '';
+  const home     = homeInput?.value.trim() || '';
+  const away     = awayInput?.value.trim() || '';
+  const venue    = venueInput?.value.trim() || '';
+  const time     = timeInput?.value.trim() || '';
   const unlocked = unlockCheck?.checked ? "1" : "0";
 
   if (mark) mark.textContent = '⏳';
