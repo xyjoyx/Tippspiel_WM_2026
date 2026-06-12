@@ -85,7 +85,7 @@ function showPage(pageId) {
   document.querySelectorAll('.page').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
   const page = document.getElementById('page-' + pageId);
   if (page) { page.classList.remove('hidden'); page.classList.add('active'); }
-  document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.page === pageId));
+  document.querySelectorAll('.nav-link, .bottom-nav-item').forEach(a => a.classList.toggle('active', a.dataset.page === pageId));
   if (pageId === 'home') renderHome();
   if (pageId === 'today') renderToday();
   if (pageId === 'overview') renderOverview();
@@ -161,7 +161,7 @@ document.getElementById('switchToNewLogin').addEventListener('click', () => {
 });
 
 // ---- NAV ----
-document.querySelectorAll('.nav-link').forEach(link => {
+document.querySelectorAll('.nav-link, .bottom-nav-item').forEach(link => {
   link.addEventListener('click', async e => {
     e.preventDefault();
     if (!currentUser) return;
