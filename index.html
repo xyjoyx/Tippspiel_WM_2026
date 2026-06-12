@@ -10,13 +10,11 @@
 </head>
 <body>
 
-<!-- ===== LOADING OVERLAY ===== -->
 <div id="loadingOverlay" class="loading-overlay hidden">
   <div class="spinner"></div>
   <span>Laden…</span>
 </div>
 
-<!-- ===== HEADER ===== -->
 <header class="site-header">
   <div class="header-inner">
     <div class="logo">
@@ -25,23 +23,23 @@
     </div>
     <nav class="main-nav" id="mainNav">
       <a href="#" class="nav-link active" data-page="home">Meine Tipps</a>
+      <a href="#" class="nav-link" data-page="today">🗓️ Heute</a>
       <a href="#" class="nav-link" data-page="overview">Alle Tipps</a>
       <a href="#" class="nav-link" data-page="ranking">Rangliste</a>
+      <a href="#" class="nav-link" data-page="verlauf">📈 Verlauf</a>
       <a href="#" class="nav-link admin-only hidden" data-page="admin">Admin</a>
     </nav>
     <button class="admin-btn" id="adminToggleBtn">🔐 Admin</button>
   </div>
 </header>
 
-<!-- ===== LOGIN PAGE ===== -->
+<!-- LOGIN -->
 <div id="page-login" class="page active">
   <div class="login-hero">
     <div class="login-card">
       <div class="login-trophy">🏆</div>
       <h1>WM 2026 Tippspiel</h1>
       <p class="login-sub">Tippe alle Spiele – wer hat die meisten Treffer?</p>
-
-      <!-- Wiederkehrender Nutzer -->
       <div id="returningUser" class="hidden">
         <p class="returning-label">Willkommen zurück!</p>
         <button class="btn-primary btn-returning" id="continueBtn">
@@ -49,23 +47,17 @@
         </button>
         <button class="btn-link" id="switchToNewLogin">Anderer Name →</button>
       </div>
-
-      <!-- Neuer Login -->
       <div id="newLogin" class="login-form">
         <input type="text" id="nameInput" placeholder="Dein Name" maxlength="30" autocomplete="off">
         <button class="btn-primary" id="loginBtn">Los geht's →</button>
       </div>
-
-      <!-- Andere bekannte Nutzer -->
       <div id="otherUsers"></div>
-
-      <!-- Alle bisherigen Teilnehmer -->
       <div id="participantsList"></div>
     </div>
   </div>
 </div>
 
-<!-- ===== HOME PAGE ===== -->
+<!-- HOME -->
 <div id="page-home" class="page hidden">
   <div class="container">
     <div class="page-header">
@@ -80,7 +72,18 @@
   </div>
 </div>
 
-<!-- ===== OVERVIEW PAGE ===== -->
+<!-- HEUTE -->
+<div id="page-today" class="page hidden">
+  <div class="container">
+    <div class="page-header">
+      <h2>🗓️ Spiele heute</h2>
+      <p class="page-sub">Alle Partien des heutigen Tages – dein Tipp und der Vergleich mit allen anderen.</p>
+    </div>
+    <div id="todayContainer"></div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
 <div id="page-overview" class="page hidden">
   <div class="container">
     <div class="page-header">
@@ -95,12 +98,12 @@
   </div>
 </div>
 
-<!-- ===== RANKING PAGE ===== -->
+<!-- RANKING -->
 <div id="page-ranking" class="page hidden">
   <div class="container">
     <div class="page-header">
       <h2>🏆 Rangliste</h2>
-      <p class="page-sub">Punkte werden vergeben sobald der Admin Ergebnisse einträgt.</p>
+      <p class="page-sub">Punkte werden vergeben sobald Ergebnisse eingetragen werden.</p>
       <div class="points-legend">
         <span class="badge exact">3 Punkte</span> Exaktes Ergebnis &nbsp;|&nbsp;
         <span class="badge tendency">1 Punkt</span> Richtige Tendenz
@@ -110,7 +113,18 @@
   </div>
 </div>
 
-<!-- ===== ADMIN PAGE ===== -->
+<!-- VERLAUF -->
+<div id="page-verlauf" class="page hidden">
+  <div class="container">
+    <div class="page-header">
+      <h2>📈 Punkte-Verlauf</h2>
+      <p class="page-sub">Wie entwickeln sich die Punkte über das Turnier?</p>
+    </div>
+    <div id="verlaufContainer"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
 <div id="page-admin" class="page hidden">
   <div class="container">
     <div class="page-header">
@@ -121,7 +135,7 @@
   </div>
 </div>
 
-<!-- ===== ADMIN LOGIN MODAL ===== -->
+<!-- ADMIN MODAL -->
 <div id="adminModal" class="modal hidden">
   <div class="modal-box">
     <h3>🔐 Admin Login</h3>
