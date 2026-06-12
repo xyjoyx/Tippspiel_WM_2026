@@ -209,9 +209,7 @@ body {
 .progress-text { font-size: 13px; color: var(--text3); margin-top: 6px; }
 
 /* ---- GROUPS & GAMES ---- */
-.group-section {
-  margin-bottom: 36px;
-}
+.group-section { margin-bottom: 36px; }
 .group-title {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 22px;
@@ -242,24 +240,11 @@ body {
 .game-row:hover { border-color: #444d56; }
 .game-row.saved { border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.03); }
 .game-meta { font-size: 11px; color: var(--text3); margin-bottom: 6px; }
-.game-inner {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.team {
-  flex: 1;
-  font-weight: 600;
-  font-size: 14px;
-}
+.game-inner { display: flex; align-items: center; gap: 12px; }
+.team { flex: 1; font-weight: 600; font-size: 14px; }
 .home-team { text-align: right; }
 .away-team { text-align: left; }
-.score-inputs {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
+.score-inputs { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 .score-input, .admin-input {
   width: 52px;
   height: 40px;
@@ -280,39 +265,18 @@ body {
 .admin-input::-webkit-inner-spin-button { -webkit-appearance: none; }
 .score-input:focus, .admin-input:focus { border-color: var(--gold); }
 .score-colon { font-size: 20px; font-weight: 700; color: var(--text3); }
-.saved-mark {
-  width: 22px;
-  text-align: center;
-  color: var(--green);
-  font-size: 16px;
-  font-weight: 700;
-}
-.actual-result {
-  font-size: 12px;
-  color: var(--text3);
-  margin-top: 6px;
-}
+.saved-mark { width: 22px; text-align: center; color: var(--green); font-size: 16px; font-weight: 700; }
+.actual-result { font-size: 12px; color: var(--text3); margin-top: 6px; }
 .actual-result strong { color: var(--gold); }
 
 /* ---- POINTS BADGES ---- */
-.pts-badge {
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-}
+.pts-badge { padding: 2px 8px; border-radius: 20px; font-size: 12px; font-weight: 700; }
 .pts-badge.exact { background: rgba(34,197,94,0.2); color: var(--green); }
 .pts-badge.tendency { background: rgba(59,130,246,0.2); color: var(--blue); }
 .pts-badge.none { background: rgba(239,68,68,0.15); color: var(--red); }
 
 /* ---- OVERVIEW ---- */
-.game-filter {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
+.game-filter { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
 .game-filter label { color: var(--text2); font-size: 14px; }
 .game-filter select {
   background: var(--bg2);
@@ -383,9 +347,7 @@ body {
 }
 
 /* ---- ADMIN ---- */
-.admin-row .score-input, .admin-row .admin-input {
-  border-color: rgba(240,180,41,0.3);
-}
+.admin-row .score-input, .admin-row .admin-input { border-color: rgba(240,180,41,0.3); }
 .admin-row.saved .admin-input { border-color: rgba(34,197,94,0.4); }
 
 /* ---- MODAL ---- */
@@ -424,12 +386,7 @@ body {
 .modal-box input:focus { border-color: var(--gold); }
 .modal-btns { display: flex; gap: 10px; justify-content: center; }
 .admin-hint { margin-top: 16px; font-size: 12px; color: var(--text3); }
-.admin-hint code {
-  background: var(--bg3);
-  padding: 2px 6px;
-  border-radius: 4px;
-  color: var(--gold);
-}
+.admin-hint code { background: var(--bg3); padding: 2px 6px; border-radius: 4px; color: var(--gold); }
 
 /* ---- TOAST ---- */
 .toast {
@@ -490,46 +447,44 @@ body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ===== NEUE STYLES ===== */
-
-/* Returning user */
-.returning-label { color: var(--text-secondary, #888); font-size: 0.9rem; margin-bottom: 0.5rem; }
+/* ---- RETURNING USER ---- */
+.returning-label { color: var(--text2); font-size: 0.9rem; margin-bottom: 0.5rem; }
 .btn-returning { width: 100%; margin-bottom: 0.5rem; }
-.btn-link { background: none; border: none; color: var(--accent, #4ade80); cursor: pointer; font-size: 0.9rem; text-decoration: underline; }
+.btn-link { background: none; border: none; color: var(--gold); cursor: pointer; font-size: 0.9rem; text-decoration: underline; }
 
-/* Participants on login */
+/* ---- PARTICIPANTS ---- */
 .participants-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.3rem; }
 .participant-chip {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--bg3);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 0.2rem 0.75rem;
   font-size: 0.82rem;
-  color: #ccc;
+  color: var(--text2);
 }
 
-/* Admin Tabs */
+/* ---- ADMIN TABS ---- */
 .admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
 .admin-tab {
   padding: 0.5rem 1.2rem;
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.05);
-  color: #ccc;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s;
 }
-.admin-tab.active { background: var(--accent, #4ade80); color: #000; font-weight: 600; border-color: transparent; }
+.admin-tab.active { background: var(--gold); color: #000; font-weight: 600; border-color: transparent; }
 
-/* KO Edit rows */
+/* ---- KO EDIT ---- */
 .ko-edit-inner { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0.4rem 0; }
 .ko-team-input, .ko-venue-input, .ko-time-input {
   padding: 0.35rem 0.6rem;
   border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(255,255,255,0.07);
-  color: #fff;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text);
   font-size: 0.9rem;
 }
 .ko-team-input { width: 140px; }
@@ -538,7 +493,7 @@ body {
 .ko-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.4rem; }
 .btn-ko-save {
   padding: 0.3rem 0.8rem;
-  background: var(--accent, #4ade80);
+  background: var(--gold);
   color: #000;
   border: none;
   border-radius: 6px;
@@ -546,18 +501,136 @@ body {
   font-size: 0.85rem;
   font-weight: 600;
 }
-.ko-unlock-label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: #ccc; cursor: pointer; }
-.ko-unlock-check { accent-color: var(--accent, #4ade80); width: 16px; height: 16px; }
+.ko-unlock-label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--text2); cursor: pointer; }
+.ko-unlock-check { accent-color: var(--gold); width: 16px; height: 16px; }
 
-/* ===== GESPERRTE SPIELE ===== */
+/* ---- GESPERRTE SPIELE ---- */
 .game-row.locked { opacity: 0.7; }
-.game-row.locked .score-input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: rgba(255,255,255,0.03);
+.game-row.locked .score-input:disabled { opacity: 0.5; cursor: not-allowed; background: rgba(255,255,255,0.03); }
+.locked-badge { font-size: 0.75rem; color: var(--red); margin-left: 0.4rem; }
+
+/* =============================================
+   NEU: Heute-Tab & Verlauf
+   ============================================= */
+
+/* ---- HEUTE ---- */
+.today-date-header {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
 }
-.locked-badge {
+
+.today-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.2s;
+}
+.today-card:hover { border-color: #444d56; }
+
+.today-card-header { margin-bottom: 0.75rem; }
+
+.today-teams {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  flex-wrap: wrap;
+}
+.today-team { color: var(--text); }
+.today-vs { color: var(--text3); font-weight: 400; font-size: 0.9rem; }
+
+.today-meta { font-size: 0.78rem; color: var(--text3); margin-top: 0.2rem; }
+
+.today-result {
+  display: inline-block;
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.25);
+  border-radius: 6px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.88rem;
+  color: var(--green);
+  margin-bottom: 0.6rem;
+}
+.today-result strong { color: var(--green); }
+
+.today-mytip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+.today-mytip.no-tip {
+  background: rgba(239,68,68,0.07);
+  border-color: rgba(239,68,68,0.2);
+  color: var(--red);
+  font-size: 0.85rem;
+}
+.today-mytip-label {
+  color: var(--blue);
+  font-weight: 600;
   font-size: 0.75rem;
-  color: #f87171;
-  margin-left: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
+
+.today-others-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
+.today-others { display: flex; flex-direction: column; }
+.today-other-tip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.87rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.today-other-tip:last-child { border-bottom: none; }
+.today-other-name { font-weight: 600; color: var(--text2); min-width: 90px; }
+.today-other-score { color: var(--text); }
+
+.today-empty {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--text3);
+}
+.today-empty-icon { font-size: 3.5rem; margin-bottom: 0.75rem; }
+.today-empty p { font-size: 1.1rem; }
+.today-empty-sub { font-size: 0.9rem; margin-top: 0.4rem; }
+
+/* ---- VERLAUF ---- */
+.verlauf-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+}
+.verlauf-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+  color: var(--gold);
+  margin-bottom: 0.25rem;
+}
+.verlauf-sub { font-size: 0.82rem; color: var(--text3); margin-bottom: 1.25rem; }
+.verlauf-svg-wrap { overflow-x: auto; }
