@@ -226,14 +226,10 @@ function renderHome() {
     container.appendChild(section);
   });
 
-  // Gruppenspiele danach
-  WM_GROUPS.forEach(group => {
-    const key = 'group_' + group.name;
-    const section = createGameSection(group.name,
-      `<span class="group-teams">${group.teams.join(' · ')}</span>`,
-      group.games, myTips, key, collapsed[key]);
-    container.appendChild(section);
-  });
+  // Alle Gruppenspiele in EINER Sektion
+  const allGroupGames = WM_GROUPS.flatMap(g => g.games);
+  const groupSection = createGameSection('Gruppenspiele', '', allGroupGames, myTips, 'gruppenspiele', collapsed['gruppenspiele']);
+  container.appendChild(groupSection);
 
   container.querySelectorAll('.score-input').forEach(input => {
     input.addEventListener('input', () => handleTipInput(input));
