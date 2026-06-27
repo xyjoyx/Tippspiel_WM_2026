@@ -201,23 +201,37 @@ document.getElementById('adminPwInput').addEventListener('keydown', e => {
 });
 
 // ---- HOME ----
+function getCollapsedSections() {
+  try { return JSON.parse(localStorage.getItem('wm2026_collapsed') || '{}'); } catch { return {}; }
+}
+function setCollapsedSection(key, collapsed) {
+  const state = getCollapsedSections();
+  state[key] = collapsed;
+  localStorage.setItem('wm2026_collapsed', JSON.stringify(state));
+}
+
 function renderHome() {
   if (!currentUser) return;
   const myTips = allTips[currentUser] || {};
   const container = document.getElementById('groupsContainer');
   container.innerHTML = '';
+  const collapsed = getCollapsedSections();
 
-  WM_GROUPS.forEach(group => {
-    const section = createGameSection(group.name,
-      `<span class="group-teams">${group.teams.join(' · ')}</span>`,
-      group.games, myTips);
-    container.appendChild(section);
-  });
-
+  // KO-Runden zuerst (oben), nur freigeschaltete
   KO_ROUNDS.forEach(round => {
     const unlockedGames = round.games.filter(g => g.unlocked && g.home !== 'TBD' && g.away !== 'TBD');
     if (!unlockedGames.length) return;
-    const section = createGameSection(round.name, '', unlockedGames, myTips);
+    const key = 'ko_' + round.id;
+    const section = createGameSection(round.name, '', unlockedGames, myTips, key, collapsed[key]);
+    container.appendChild(section);
+  });
+
+  // Gruppenspiele danach
+  WM_GROUPS.forEach(group => {
+    const key = 'group_' + group.name;
+    const section = createGameSection(group.name,
+      `<span class="group-teams">${group.teams.join(' · ')}</span>`,
+      group.games, myTips, key, collapsed[key]);
     container.appendChild(section);
   });
 
@@ -233,7 +247,10 @@ function renderToday() {
   const container = document.getElementById('todayContainer');
   container.innerHTML = '';
 
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const todayStr = now.getFullYear() + '-' +
+    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0');
   const allGames = [...ALL_GROUP_GAMES, ...ALL_KO_GAMES.filter(g => g.unlocked && g.home !== 'TBD')];
   const todayGames = allGames
     .filter(g => g.date === todayStr)
@@ -498,12 +515,40 @@ function isGameLocked(game) {
   } catch { return false; }
 }
 
-function createGameSection(title, subtitle, games, myTips) {
+function createGameSection(title, subtitle, games, myTips, collapseKey, isCollapsed) {
   const section = document.createElement('div');
   section.className = 'group-section';
-  section.innerHTML = `<h3 class="group-title">${title} ${subtitle}</h3>`;
+
+  const header = document.createElement('h3');
+  header.className = 'group-title collapsible-title';
+
+  // Zähle getippte / gesamt für diese Sektion
+  const tipped = games.filter(g => myTips[g.id] && myTips[g.id].home !== '' && myTips[g.id].away !== '').length;
+  const total = games.length;
+  const allDone = tipped === total;
+  const hasResult = games.every(g => results[g.id]);
+
+  const arrow = isCollapsed ? '▶' : '▼';
+  const doneTag = allDone
+    ? `<span class="section-done-badge">✓ alle ${total}</span>`
+    : `<span class="section-progress-badge">${tipped}/${total}</span>`;
+
+  header.innerHTML = `<span class="collapse-arrow">${arrow}</span> ${title} ${subtitle} ${doneTag}`;
+
+  if (collapseKey) {
+    header.style.cursor = 'pointer';
+    header.addEventListener('click', () => {
+      const newCollapsed = !gamesEl.classList.contains('section-hidden');
+      gamesEl.classList.toggle('section-hidden', newCollapsed);
+      header.querySelector('.collapse-arrow').textContent = newCollapsed ? '▶' : '▼';
+      setCollapsedSection(collapseKey, newCollapsed);
+    });
+  }
+
+  section.appendChild(header);
   const gamesEl = document.createElement('div');
   gamesEl.className = 'games-list';
+  if (isCollapsed) gamesEl.classList.add('section-hidden');
 
   games.forEach(game => {
     const tip = myTips[game.id] || { home: '', away: '' };
@@ -578,9 +623,10 @@ function updateProgress() {
     ...ALL_GROUP_GAMES,
     ...ALL_KO_GAMES.filter(g => g.unlocked && g.home !== 'TBD')
   ];
-  const done = Object.entries(myTips).filter(([id, t]) => t.home !== '' && t.away !== '').length;
+  const tippableIds = new Set(tippableGames.map(g => g.id));
+  const done = Object.entries(myTips).filter(([id, t]) => tippableIds.has(id) && t.home !== '' && t.away !== '').length;
   const total = tippableGames.length;
-  document.getElementById('progressBar').style.width = Math.round(done/total*100) + '%';
+  document.getElementById('progressBar').style.width = total > 0 ? Math.round(done/total*100) + '%' : '0%';
   document.getElementById('progressText').textContent = `${done} von ${total} Spielen getippt`;
 }
 
