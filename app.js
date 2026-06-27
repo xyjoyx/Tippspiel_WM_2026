@@ -251,7 +251,7 @@ function renderToday() {
   const todayStr = now.getFullYear() + '-' +
     String(now.getMonth() + 1).padStart(2, '0') + '-' +
     String(now.getDate()).padStart(2, '0');
-  const allGames = [...ALL_GROUP_GAMES, ...ALL_KO_GAMES.filter(g => g.unlocked && g.home !== 'TBD')];
+  const allGames = [...ALL_GROUP_GAMES, ...getLiveKoGames()];
   const todayGames = allGames
     .filter(g => g.date === todayStr)
     .sort((a, b) => a.time.localeCompare(b.time));
@@ -617,12 +617,13 @@ function handleTipInput(input) {
   }
 }
 
+function getLiveKoGames() {
+  return KO_ROUNDS.flatMap(r => r.games).filter(g => g.unlocked && g.home !== 'TBD');
+}
+
 function updateProgress() {
   const myTips = allTips[currentUser] || {};
-  const tippableGames = [
-    ...ALL_GROUP_GAMES,
-    ...ALL_KO_GAMES.filter(g => g.unlocked && g.home !== 'TBD')
-  ];
+  const tippableGames = [...ALL_GROUP_GAMES, ...getLiveKoGames()];
   const tippableIds = new Set(tippableGames.map(g => g.id));
   const done = Object.entries(myTips).filter(([id, t]) => tippableIds.has(id) && t.home !== '' && t.away !== '').length;
   const total = tippableGames.length;
@@ -635,7 +636,7 @@ function renderOverview() {
   const gameSelect = document.getElementById('gameSelect');
   const tippableGames = [
     ...ALL_GROUP_GAMES,
-    ...ALL_KO_GAMES.filter(g => g.unlocked && g.home !== 'TBD')
+    ...getLiveKoGames()
   ].sort((a, b) => {
     const dateA = new Date(a.date + 'T' + (a.time || '00:00') + ':00');
     const dateB = new Date(b.date + 'T' + (b.time || '00:00') + ':00');
