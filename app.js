@@ -210,6 +210,10 @@ function setCollapsedSection(key, collapsed) {
   localStorage.setItem('wm2026_collapsed', JSON.stringify(state));
 }
 
+function hasUntippedGames(games, myTips) {
+  return games.some(g => !myTips[g.id] || myTips[g.id].home === '' || myTips[g.id].away === '');
+}
+
 function renderHome() {
   if (!currentUser) return;
   const myTips = allTips[currentUser] || {};
@@ -222,14 +226,86 @@ function renderHome() {
     const unlockedGames = round.games.filter(g => g.unlocked && g.home !== 'TBD' && g.away !== 'TBD');
     if (!unlockedGames.length) return;
     const key = 'ko_' + round.id;
-    const section = createGameSection(round.name, '', unlockedGames, myTips, key, collapsed[key]);
+    // Standard: aufgeklappt wenn noch ungetippte Spiele, sonst zugeklappt
+    const defaultCollapsed = !hasUntippedGames(unlockedGames, myTips);
+    const isCollapsed = key in collapsed ? collapsed[key] : defaultCollapsed;
+    const section = createGameSection(round.name, '', unlockedGames, myTips, key, isCollapsed);
     container.appendChild(section);
   });
 
-  // Alle Gruppenspiele in EINER Sektion
+  // Gruppenspiele: ein Master-Wrapper mit allen Gruppen drin
   const allGroupGames = WM_GROUPS.flatMap(g => g.games);
-  const groupSection = createGameSection('Gruppenspiele', '', allGroupGames, myTips, 'gruppenspiele', collapsed['gruppenspiele']);
-  container.appendChild(groupSection);
+  const masterKey = 'gruppenspiele';
+  const masterDefaultCollapsed = !hasUntippedGames(allGroupGames, myTips);
+  const masterCollapsed = masterKey in collapsed ? collapsed[masterKey] : masterDefaultCollapsed;
+
+  const masterSection = document.createElement('div');
+  masterSection.className = 'group-section master-section';
+
+  const tipped = allGroupGames.filter(g => myTips[g.id] && myTips[g.id].home !== '' && myTips[g.id].away !== '').length;
+  const total = allGroupGames.length;
+  const allDone = tipped === total;
+  const masterHeader = document.createElement('h3');
+  masterHeader.className = 'group-title collapsible-title master-title';
+  masterHeader.innerHTML = `<span class="collapse-arrow">${masterCollapsed ? '▶' : '▼'}</span> Gruppenspiele ${allDone ? `<span class="section-done-badge">✓ alle ${total}</span>` : `<span class="section-progress-badge">${tipped}/${total}</span>`}`;
+  masterSection.appendChild(masterHeader);
+
+  const masterBody = document.createElement('div');
+  masterBody.className = 'master-body';
+  if (masterCollapsed) masterBody.classList.add('section-hidden');
+
+  masterHeader.style.cursor = 'pointer';
+  masterHeader.addEventListener('click', () => {
+    const nowCollapsed = !masterBody.classList.contains('section-hidden');
+    masterBody.classList.toggle('section-hidden', nowCollapsed);
+    masterHeader.querySelector('.collapse-arrow').textContent = nowCollapsed ? '▶' : '▼';
+    setCollapsedSection(masterKey, nowCollapsed);
+  });
+
+  // Jede Gruppe einzeln mit Gruppenname als Unterüberschrift
+  WM_GROUPS.forEach(group => {
+    const groupLabel = document.createElement('div');
+    groupLabel.className = 'group-sublabel';
+    groupLabel.innerHTML = `<span class="group-sublabel-name">${group.name}</span> <span class="group-teams">${group.teams.join(' · ')}</span>`;
+    masterBody.appendChild(groupLabel);
+
+    const gamesEl = document.createElement('div');
+    gamesEl.className = 'games-list';
+    group.games.forEach(game => {
+      const tip = myTips[game.id] || { home: '', away: '' };
+      const isSaved = tip.home !== '' && tip.away !== '';
+      const locked = isGameLocked(game);
+      const result = results[game.id];
+      let pointsBadge = '';
+      if (result && isSaved) {
+        const pts = calcPoints(tip, result);
+        pointsBadge = `<span class="pts-badge ${pts===3?'exact':pts===1?'tendency':'none'}">${pts===3?'+3':pts===1?'+1':'+0'}</span>`;
+      }
+      const gameEl = document.createElement('div');
+      gameEl.className = 'game-row' + (isSaved ? ' saved' : '') + (locked ? ' locked' : '');
+      gameEl.dataset.id = game.id;
+      gameEl.innerHTML = `
+        <div class="game-meta">${formatDate(game.date, game.time)} · ${game.venue}${locked ? ' <span class="locked-badge">🔒 Gesperrt</span>' : ''}</div>
+        <div class="game-inner">
+          <span class="team home-team">${game.home}</span>
+          <div class="score-inputs">
+            <input type="number" min="0" max="99" class="score-input" data-id="${game.id}" data-side="home" value="${tip.home}" placeholder="–" ${locked ? 'disabled' : ''}>
+            <span class="score-colon">:</span>
+            <input type="number" min="0" max="99" class="score-input" data-id="${game.id}" data-side="away" value="${tip.away}" placeholder="–" ${locked ? 'disabled' : ''}>
+          </div>
+          <span class="team away-team">${game.away}</span>
+          <span class="saved-mark" id="mark-${game.id}">${locked ? '🔒' : isSaved ? '✓' : ''}</span>
+          ${pointsBadge}
+        </div>
+        ${result ? `<div class="actual-result">Ergebnis: <strong>${result.home}:${result.away}</strong></div>` : ''}
+      `;
+      gamesEl.appendChild(gameEl);
+    });
+    masterBody.appendChild(gamesEl);
+  });
+
+  masterSection.appendChild(masterBody);
+  container.appendChild(masterSection);
 
   container.querySelectorAll('.score-input').forEach(input => {
     input.addEventListener('input', () => handleTipInput(input));
