@@ -119,7 +119,7 @@ const WM_GROUPS = [
       { id: "J2", date: "2026-06-17", time: "06:00", home: "Österreich",  away: "Jordanien",  venue: "San Francisco" },
       { id: "J3", date: "2026-06-22", time: "19:00", home: "Argentinien", away: "Österreich", venue: "Los Angeles" },
       { id: "J4", date: "2026-06-22", time: "22:00", home: "Jordanien",   away: "Algerien",   venue: "Miami" },
-      { id: "J5", date: "2026-06-28", time: "04:00", home: "Argentinien", away: "Jordanien",  venue: "Seattle" },
+      { id: "J5", date: "2026-06-28", time: "04:00", home: "Jordanien", away: "Argentinien",  venue: "Seattle" },
       { id: "J6", date: "2026-06-28", time: "04:00", home: "Algerien",    away: "Österreich", venue: "Dallas" },
     ]
   },
