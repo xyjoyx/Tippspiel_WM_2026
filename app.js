@@ -580,7 +580,9 @@ function renderVerlauf() {
 // ---- GAME HELPERS ----
 function isGameLocked(game) {
   try {
-    const [h, m] = game.time.split(':').map(Number);
+    if (!game.date) return false;
+    const timeStr = (game.time && /^\d{1,2}:\d{2}$/.test(game.time)) ? game.time : '00:00';
+    const [h, m] = timeStr.split(':').map(Number);
     const kickoff = new Date(game.date + 'T00:00:00');
     kickoff.setHours(h, m, 0, 0);
     return Date.now() >= kickoff.getTime();
@@ -1012,7 +1014,8 @@ function calcPoints(tip, result) {
 // ---- HELPERS ----
 function formatDate(dateStr, time) {
   const d = new Date(dateStr+'T12:00:00');
-  return d.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'})+' · '+time+' Uhr';
+  const timeDisplay = (time && /^\d{1,2}:\d{2}$/.test(time)) ? time : '–';
+  return d.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'})+' · '+timeDisplay+' Uhr';
 }
 function formatDateShort(dateStr) {
   return new Date(dateStr+'T12:00:00').toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'});
