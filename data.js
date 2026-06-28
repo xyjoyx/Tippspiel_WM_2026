@@ -157,9 +157,9 @@ const KO_ROUNDS = [
     name: "Sechzehntelfinale",
     games: [
       { id: "R16_1",  date: "2026-06-28", time: "21:00", home: "TBD", away: "TBD", venue: "TBD", label: "Spiel 1" },
-      { id: "R16_2",  date: "2026-06-28", time: "21:00", home: "TBD", away: "TBD", venue: "TBD", label: "Spiel 2" },
+      { id: "R16_2",  date: "2026-06-29", time: "19:00", home: "TBD", away: "TBD", venue: "TBD", label: "Spiel 2" },
       { id: "R16_3",  date: "2026-06-29", time: "19:00", home: "TBD", away: "TBD", venue: "TBD", label: "Spiel 3" },
-      { id: "R16_4",  date: "2026-06-29", time: "22:30", home: "TBD", away: "TBD", venue: "TBD", label: "Spiel 4" },
+      { id: "R16_4",  date: "2026-06-30", time: "22:30", home: "TBD", away: "TBD", venue: "TBD", label: "Spiel 4" },
       { id: "R16_5",  date: "2026-06-30", time: "19:00", home: "TBD", away: "TBD", venue: "TBD", label: "Spiel 5" },
       { id: "R16_6",  date: "2026-06-30", time: "23:00", home: "TBD", away: "TBD", venue: "TBD", label: "Spiel 6" },
       { id: "R16_7",  date: "2026-07-01", time: "03:00", home: "TBD", away: "TBD", venue: "TBD", label: "Spiel 7" },
