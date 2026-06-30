@@ -221,8 +221,8 @@ function renderHome() {
   container.innerHTML = '';
   const collapsed = getCollapsedSections();
 
-  // KO-Runden zuerst (oben), nur freigeschaltete
-  KO_ROUNDS.forEach(round => {
+  // KO-Runden zuerst (oben), neueste zuerst
+  [...KO_ROUNDS].reverse().forEach(round => {
     const unlockedGames = round.games.filter(g => g.unlocked && g.home !== 'TBD' && g.away !== 'TBD');
     if (!unlockedGames.length) return;
     const key = 'ko_' + round.id;
